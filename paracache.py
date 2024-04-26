@@ -1,10 +1,39 @@
-MAIN_MEMORY_SIZE = 256
-CACHE_SIZE = 32 
-BLOCK_SIZE = 1 
-ASSOCIATIVITY = 1
+import math
+def log2(x):
+    return math.log(x, 2)
+
+MAIN_MEMORY_SIZE =int(input("Enter main memory size"))
+CACHE_SIZE = int(input("Enter cache memory size"))
+BLOCK_SIZE = int(input("Enter block size"))
+ASSOCIATIVITY = int(input("Enter associativity"))
 
 # Initialize the cache with '0' for each block
+no_of_blocks = CACHE_SIZE//BLOCK_SIZE
 cache = [['0'] * BLOCK_SIZE for _ in range(CACHE_SIZE)]
+
+
+def binary_representation(address, total_bits):
+    # Convert the address to binary string
+    binary_str = bin(address)[2:]
+    
+    # Check if the binary string needs padding
+    if len(binary_str) < total_bits:
+        # Calculate the padding length
+        padding_length = total_bits - len(binary_str)
+        # Pad the binary string with zeros
+        binary_str = '0' * padding_length + binary_str
+    
+    return binary_str
+def calculate_bits():
+    tagbits = int(log2((MAIN_MEMORY_SIZE/CACHE_SIZE)))
+    indexbits = int(log2((no_of_blocks)))
+    wordbits = int(log2(BLOCK_SIZE))
+    total_bits = tagbits + indexbits + wordbits
+    
+    print("no of tag bits" , tagbits)
+    print("no of index bits" , indexbits)
+    print("no of word bits" , wordbits)    
+    return tagbits, indexbits, wordbits, total_bits
 
 def input_memory_addresses():
     addresses = input("Enter memory addresses separated by space: ").split()
@@ -31,6 +60,9 @@ def cache_operation(address):
 
     tag = calculate_tag(address)
     index = calculate_index(address)
+    
+    
+    
     
     if ASSOCIATIVITY == 0: # Fully 
         for i, block in enumerate(cache):
@@ -59,14 +91,22 @@ def main():
     addresses = input_memory_addresses()
     hits = 0
     misses = 0
+    tagbits, indexbits, wordbits, total_bits = calculate_bits()  
     for address in addresses:
+        print(binary_representation(address, total_bits))  
         hit = cache_operation(address)
         if hit:
             hits += 1
         else:
             misses += 1
+
+    total_accesses = hits + misses
+    hit_ratio = hits / total_accesses if total_accesses > 0 else 0
+    miss_ratio = misses / total_accesses if total_accesses > 0 else 0
     print(f"Total hits: {hits}")
     print(f"Total misses: {misses}")
+    print(f"Hit ratio: {hit_ratio:.2f}")
+    print(f"Miss ratio: {miss_ratio:.2f}")
 
 if __name__ == "__main__":
     main()
