@@ -61,9 +61,6 @@ def cache_operation(address):
     tag = calculate_tag(address)
     index = calculate_index(address)
     
-    
-    
-    
     if ASSOCIATIVITY == 0: # Fully 
         for i, block in enumerate(cache):
             if block[0] == '0' or block[0] == str(address):
